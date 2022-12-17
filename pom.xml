@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+<!-- Fix:		<version>2.7.6 </version>-->
+		<version>2.7.0</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.mydeveloperplanet</groupId>
+	<artifactId>mygrypeplanet</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>MyGrypePlanet</name>
+	<description>Demo project for Grype</description>
+	<properties>
+		<java.version>17</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+<!--			Solution 1 -->
+<!--			<exclusions>-->
+<!--				<exclusion>-->
+<!--					<groupId>org.yaml</groupId>-->
+<!--					<artifactId>snakeyaml</artifactId>-->
+<!--				</exclusion>-->
+<!--			</exclusions>-->
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+<!--	Solution 2 -->
+<!--  <dependencyManagement>-->
+<!--		<dependencies>-->
+<!--			<dependency>-->
+<!--				<groupId>org.yaml</groupId>-->
+<!--				<artifactId>snakeyaml</artifactId>-->
+<!--				<version>1.32</version>-->
+<!--			</dependency>-->
+<!--		</dependencies>-->
+<!--	</dependencyManagement>-->
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.xenoamess.docker</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.25</version>
+				<configuration>
+					<repository>mydeveloperplanet/mygrypeplanet</repository>
+					<tag>${project.version}</tag>
+					<buildArgs>
+						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+					</buildArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<executable>grype</executable>
+					<arguments>
+						<argument>docker:mydeveloperplanet/mygrypeplanet:${project.version}</argument>
+						<argument>--scope</argument>
+						<argument>all-layers</argument>
+						<argument>--fail-on</argument>
+						<argument>high</argument>
+						<argument>--only-fixed</argument>
+						<argument>-q</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
